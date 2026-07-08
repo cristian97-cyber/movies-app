@@ -5,7 +5,8 @@
 This is **CineScope**, a React + Vite + TypeScript movie/TV application. Source code lives in `src/`.
 
 - `src/main.tsx`: app entry point; wraps React with Material UI providers.
-- `src/App.tsx`: root application component.
+- `src/App.tsx`: root application component; renders the persistent app layout, including the shared header above route/page content.
+- `src/components/Header.tsx`: persistent CineScope header with the brand block on the left and a search field on the right. It should remain visible regardless of the active route.
 - `src/theme/theme.ts`: Material UI theme configuration.
 - `src/assets/`: bundled images and static assets imported by React.
 - `src/assets/brand/logo.png`: CineScope logo used by the application. It has a transparent background and is intended to be imported from React components.
@@ -47,6 +48,8 @@ The Material UI theme currently uses a dark cinema-style palette:
 - background paper: `#181818`
 
 Use `src/assets/brand/` for brand images imported by React. Use `public/` for root-served browser assets such as favicon files referenced from `index.html`.
+
+The header currently uses `/favicon.png` as the compact brand icon, paired with text labels for the app name and subtitle. Keep the search input placeholder as `Search title` until search behavior is implemented.
 
 ## Testing Guidelines
 
