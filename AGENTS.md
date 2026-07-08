@@ -2,13 +2,15 @@
 
 ## Project Structure & Module Organization
 
-This is a React + Vite + TypeScript movie/TV application. Source code lives in `src/`.
+This is **CineScope**, a React + Vite + TypeScript movie/TV application. Source code lives in `src/`.
 
 - `src/main.tsx`: app entry point; wraps React with Material UI providers.
 - `src/App.tsx`: root application component.
 - `src/theme/theme.ts`: Material UI theme configuration.
 - `src/assets/`: bundled images and static assets imported by React.
+- `src/assets/brand/logo.png`: CineScope logo used by the application. It has a transparent background and is intended to be imported from React components.
 - `public/`: static files served directly by Vite.
+- `public/favicon.png`: browser favicon derived from the CineScope logo. `index.html` points to this file directly as `/favicon.png`.
 - `dist/`: production build output; do not edit manually or commit.
 
 As the app grows, prefer feature-oriented folders such as `src/features/catalog/`, `src/features/watchlist/`, and shared UI in `src/components/`.
@@ -33,6 +35,19 @@ Use TypeScript and React function components. Prefer explicit domain types for T
 
 Formatting uses Prettier, and linting uses ESLint. Keep imports tidy, avoid unused exports, and keep components focused on one responsibility.
 
+## Branding & Assets
+
+The app name is **CineScope**. Keep user-facing titles, navigation labels, document metadata, and brand assets consistent with that name.
+
+The Material UI theme currently uses a dark cinema-style palette:
+
+- primary yellow: `#fbc500`
+- secondary teal: `#00b8a9`
+- background default: `#101010`
+- background paper: `#181818`
+
+Use `src/assets/brand/` for brand images imported by React. Use `public/` for root-served browser assets such as favicon files referenced from `index.html`.
+
 ## Testing Guidelines
 
 No test framework is configured yet. When tests are added, prefer Vitest with React Testing Library to match the Vite stack.
@@ -47,7 +62,7 @@ Until then, use `npm run build` and `npm run lint` as the minimum verification.
 
 ## Commit & Pull Request Guidelines
 
-The repository currently has an initial commit only, so no detailed convention exists yet. Use concise imperative commit messages, for example:
+Use concise imperative commit messages, for example:
 
 - `Add Material UI theme`
 - `Create TMDB client`
