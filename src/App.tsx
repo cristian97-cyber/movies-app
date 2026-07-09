@@ -11,7 +11,7 @@ function App() {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <Header />
-      <Box component="main" sx={{ px: { xs: 2, sm: 4, md: 6 }, py: 4 }}>
+      <Box component="main">
         <Routes>
           <Route index element={<HomePage />} />
           <Route

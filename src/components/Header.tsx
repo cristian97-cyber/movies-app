@@ -75,7 +75,7 @@ export function Header() {
                 mt: 0.5,
               }}
             >
-              Film, serie e scelte salvate
+              Movies, shows, and saved picks
             </Typography>
           </Box>
         </Box>

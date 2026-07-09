@@ -24,7 +24,7 @@ const baseTheme = createTheme({
     borderRadius: 8,
   },
   typography: {
-    fontFamily: ["Inter", "Roboto", "Arial", "sans-serif"].join(","),
+    fontFamily: ["Roboto", "Inter", "Arial", "sans-serif"].join(","),
   },
 });
 
