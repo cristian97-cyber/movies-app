@@ -1,5 +1,4 @@
 import type { TmdbPaginatedResponseModel } from "../models/tmdb-paginated-response.model.ts";
-import type { TmdbMovieModel } from "../models/tmdb-movie.model.ts";
 import type { TmdbMediaType } from "../types/tmdb-media.type.ts";
 import type { TmdbMediaByType } from "../types/tmdb-media-by.type.ts";
 
@@ -52,30 +51,19 @@ export function getPopularMedia<TMediaType extends TmdbMediaType>(
   );
 }
 
-export function discoverMovies() {
+export function discoverMedia<TMediaType extends TmdbMediaType>(
+  mediaType: TMediaType,
+  page: number,
+) {
   const searchParams = new URLSearchParams({
-    page: "1",
+    page: String(Math.max(1, Math.trunc(page))),
   });
 
   if (TMDB_LANGUAGE) {
     searchParams.set("language", TMDB_LANGUAGE);
   }
 
-  return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMovieModel>>(
-    `/discover/movie?${searchParams.toString()}`,
-  );
-}
-
-export function discoverTv() {
-  const searchParams = new URLSearchParams({
-    page: "1",
-  });
-
-  if (TMDB_LANGUAGE) {
-    searchParams.set("language", TMDB_LANGUAGE);
-  }
-
-  return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMovieModel>>(
-    `/discover/tv?${searchParams.toString()}`,
+  return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMediaByType[TMediaType]>>(
+    `/discover/${mediaType}?${searchParams.toString()}`,
   );
 }
