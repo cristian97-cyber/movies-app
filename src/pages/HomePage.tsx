@@ -7,10 +7,6 @@ import { useDiscoverMedia } from "../features/tmdb/hooks/useDiscoverMedia.ts";
 import { usePopularMedia } from "../features/tmdb/hooks/usePopularMedia.ts";
 import type { TmdbMediaType } from "../features/tmdb/types/tmdb-media.type.ts";
 import { MediaList } from "../components/MediaList.tsx";
-import type { TmdbMovieModel } from "../features/tmdb/models/tmdb-movie.model.ts";
-import type { TmdbTvModel } from "../features/tmdb/models/tmdb-tv.model.ts";
-
-const ITEMS_FOR_PAGE = 20;
 
 export function HomePage() {
   const [itemRandomSeed] = useState(() => Math.random());
@@ -24,6 +20,10 @@ export function HomePage() {
 
   const popularMediaQuery = usePopularMedia(bannerMediaType);
   const discoverMediaQuery = useDiscoverMedia(listMediaType, listPage);
+
+  useEffect(() => {
+    sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [listPage]);
 
   const popularMedia = popularMediaQuery.data?.results.at(
     Math.floor(itemRandomSeed * popularMediaQuery.data?.results.length),
@@ -44,10 +44,6 @@ export function HomePage() {
     setListPage(page);
   };
 
-  useEffect(() => {
-    sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [listPage]);
-
   return (
     <Box>
       {popularMediaQuery.isLoading && <LoadingSpinner />}
@@ -59,18 +55,7 @@ export function HomePage() {
         </Alert>
       )}
 
-      {popularMedia && bannerMediaType === "movie" && (
-        <PopularMediaBanner
-          media={popularMedia as TmdbMovieModel}
-          mediaType="movie"
-        />
-      )}
-      {popularMedia && bannerMediaType === "tv" && (
-        <PopularMediaBanner
-          media={popularMedia as TmdbTvModel}
-          mediaType="tv"
-        />
-      )}
+      {popularMedia && <PopularMediaBanner media={popularMedia} />}
 
       <Box
         component="section"
@@ -119,31 +104,13 @@ export function HomePage() {
             </Box>
           )}
 
-          {isThereMedia && listMediaType === "movie" && (
+          {isThereMedia && (
             <MediaList
-              media={discoverMediaQuery.data.results as TmdbMovieModel[]}
-              mediaType="movie"
+              media={discoverMediaQuery.data.results}
               page={listPage}
               isFetching={discoverMediaQuery.isFetching}
-              totalPages={Math.min(discoverMediaQuery.data.total_pages, 500)}
-              totalResults={Math.min(
-                discoverMediaQuery.data.total_results,
-                ITEMS_FOR_PAGE * 500,
-              )}
-              handlePageChange={handleListPageChange}
-            />
-          )}
-          {isThereMedia && listMediaType === "tv" && (
-            <MediaList
-              media={discoverMediaQuery.data.results as TmdbTvModel[]}
-              mediaType="tv"
-              page={listPage}
-              isFetching={discoverMediaQuery.isFetching}
-              totalPages={Math.min(discoverMediaQuery.data.total_pages, 500)}
-              totalResults={Math.min(
-                discoverMediaQuery.data.total_results,
-                ITEMS_FOR_PAGE * 500,
-              )}
+              totalPages={discoverMediaQuery.data.totalPages}
+              totalResults={discoverMediaQuery.data.totalResults}
               handlePageChange={handleListPageChange}
             />
           )}

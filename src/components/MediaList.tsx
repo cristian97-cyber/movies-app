@@ -1,10 +1,10 @@
-import type { TmdbMovieModel } from "../features/tmdb/models/tmdb-movie.model.ts";
-import type { TmdbTvModel } from "../features/tmdb/models/tmdb-tv.model.ts";
 import { Box, Pagination, Typography } from "@mui/material";
 import type { ChangeEvent } from "react";
+import type { MediaModel } from "../models/media.model.ts";
 import { MediaCard } from "./MediaCard.tsx";
 
 type MediaListSharedProps = {
+  media: MediaModel[];
   page: number;
   isFetching: boolean;
   totalPages: number;
@@ -12,16 +12,9 @@ type MediaListSharedProps = {
   handlePageChange: (_event: ChangeEvent<unknown>, newPage: number) => void;
 };
 
-type MediaListProps = MediaListSharedProps &
-  (
-    | { mediaType: "movie"; media: TmdbMovieModel[] }
-    | { mediaType: "tv"; media: TmdbTvModel[] }
-  );
-
-export function MediaList(props: MediaListProps) {
+export function MediaList(props: MediaListSharedProps) {
   const {
     media,
-    mediaType,
     page,
     isFetching,
     totalPages,
@@ -52,11 +45,9 @@ export function MediaList(props: MediaListProps) {
           transition: "opacity 160ms ease",
         }}
       >
-        {mediaType === "movie"
-          ? media.map((media) => (
-              <MediaCard key={media.id} mediaType="movie" media={media} />
-            ))
-          : media.map((media) => <MediaCard mediaType="tv" media={media} />)}
+        {media.map((media) => (
+          <MediaCard key={media.id} media={media} />
+        ))}
       </Box>
 
       {totalPages > 1 && (

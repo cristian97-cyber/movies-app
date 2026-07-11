@@ -1,24 +1,17 @@
 import LocalMoviesOutlinedIcon from "@mui/icons-material/LocalMoviesOutlined";
 import { Box, Card, Chip, Typography } from "@mui/material";
 
-import type { TmdbMovieModel } from "../features/tmdb/models/tmdb-movie.model.ts";
-import type { TmdbTvModel } from "../features/tmdb/models/tmdb-tv.model.ts";
+import type { MediaModel } from "../models/media.model.ts";
 
 const TMDB_IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
-type MediaCardProps =
-  | { mediaType: "movie"; media: TmdbMovieModel }
-  | { mediaType: "tv"; media: TmdbTvModel };
+type MediaCardProps = {
+  media: MediaModel;
+};
 
-export function MediaCard(props: MediaCardProps) {
-  const { media, mediaType } = props;
-
-  const title = mediaType === "movie" ? media.title : media.name;
-  const releaseDate =
-    mediaType === "movie" ? media.release_date : media.first_air_date;
-  const year = releaseDate?.slice(0, 4) || "TBA";
-  const posterUrl = media.poster_path
-    ? `${TMDB_IMAGE_BASE_URL}/w500${media.poster_path}`
+export function MediaCard({ media }: MediaCardProps) {
+  const posterUrl = media.posterPath
+    ? `${TMDB_IMAGE_BASE_URL}/w500${media.posterPath}`
     : null;
 
   return (
@@ -43,7 +36,7 @@ export function MediaCard(props: MediaCardProps) {
       >
         {posterUrl ? (
           <Box
-            alt={`${title} poster`}
+            alt={`${media.title} poster`}
             component="img"
             loading="lazy"
             src={posterUrl}
@@ -81,13 +74,13 @@ export function MediaCard(props: MediaCardProps) {
           }}
         >
           <Chip
-            label={mediaType === "movie" ? "Movie" : "TV series"}
+            label={media.mediaType === "movie" ? "Movie" : "TV series"}
             size="small"
             sx={{ bgcolor: "rgba(16, 16, 16, 0.78)", color: "common.white" }}
           />
           <Chip
             color="primary"
-            label={media.vote_average.toFixed(1)}
+            label={media.rating.toFixed(1)}
             size="small"
             sx={{ fontWeight: 700 }}
           />
@@ -108,7 +101,7 @@ export function MediaCard(props: MediaCardProps) {
             WebkitLineClamp: 2,
           }}
         >
-          {title}
+          {media.title}
         </Typography>
         <Box
           sx={{
@@ -119,8 +112,8 @@ export function MediaCard(props: MediaCardProps) {
             mt: 1.5,
           }}
         >
-          <span>{year}</span>
-          <span>{media.original_language.toUpperCase()}</span>
+          <span>{media.releaseYear}</span>
+          <span>{media.originalLanguage.toUpperCase()}</span>
         </Box>
       </Box>
     </Card>

@@ -7,8 +7,10 @@ This is **CineScope**, a React + Vite + TypeScript movie/TV application. Source 
 - `src/main.tsx`: app entry point; wraps React with the router, TanStack Query, and Material UI providers.
 - `src/App.tsx`: root application component; renders the persistent app layout and defines the home and media-detail routes.
 - `src/components/Header.tsx`: persistent CineScope header with the brand block on the left and a search field on the right. It should remain visible regardless of the active route.
-- `src/components/PopularMediaBanner.tsx`: home-page hero banner shared by popular movies and TV series. Its discriminated props must keep `mediaType` consistent with the corresponding TMDB model.
+- `src/components/PopularMediaBanner.tsx`: home-page hero banner shared by popular movies and TV series; it consumes the normalized `MediaModel` used by the UI.
+- `src/models/`: backend-independent UI/domain models consumed by pages and components, including normalized `MediaModel` and `PaginatedMediaModel`.
 - `src/features/tmdb/`: TMDB integration, split into the API client, TanStack Query hooks, response models, and shared media types.
+- `src/features/tmdb/mappers/tmdb-media.mapper.ts`: normalization boundary from TMDB movie/TV DTOs and snake_case pagination fields to the shared camelCase UI models.
 - `src/features/tmdb/hooks/usePopularMedia.ts`: typed popular-content query. It accepts `"movie" | "tv"`, includes that value in the query key, and makes only the matching TMDB request.
 - `src/pages/HomePage.tsx`: selects a stable random media type and popular result for the hero banner.
 - `src/const/app-url.const.ts`: shared application route constants; use these instead of duplicating route strings.
@@ -41,9 +43,9 @@ Use TypeScript and React function components. Prefer explicit domain types for T
 
 Formatting uses Prettier, and linting uses ESLint. Keep imports tidy, avoid unused exports, and keep components focused on one responsibility.
 
-Keep movie and TV response models distinct because TMDB uses fields such as `title`/`release_date` for movies and `name`/`first_air_date` for TV series. Use `TmdbMediaType` and `TmdbMediaByType` when an API or hook supports both. For React components accepting either model, prefer discriminated unions keyed by `mediaType` so invalid model/type combinations fail at compile time.
+Keep movie and TV response models distinct inside the TMDB layer because the backend uses fields such as `title`/`release_date` for movies and `name`/`first_air_date` for TV series. Normalize those DTOs through the TMDB mapper and expose the backend-independent `MediaModel` and `PaginatedMediaModel` from `src/models/` to pages and components. UI components should not import TMDB movie/TV response models, read snake_case backend fields, or duplicate movie/TV mapping logic.
 
-Use TanStack Query for server state. Query keys must include every input that changes the response, such as the media type. Hooks must be called unconditionally; choose dynamic endpoints inside the query function rather than conditionally invoking separate hooks.
+Use TanStack Query for server state. Query keys must include every input that changes the response, such as media type and page. Hooks must be called unconditionally; choose dynamic endpoints inside the query function rather than conditionally invoking separate hooks. Keep cached query-function results faithful to TMDB and use `select` with the shared mapper to expose normalized UI models.
 
 ## Branding & Assets
 

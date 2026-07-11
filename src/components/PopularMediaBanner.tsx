@@ -4,23 +4,22 @@ import { Box, Button, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 import { APP_URL } from "../const/app-url.const.ts";
-import type { TmdbMovieModel } from "../features/tmdb/models/tmdb-movie.model.ts";
-import type { TmdbTvModel } from "../features/tmdb/models/tmdb-tv.model.ts";
+import type { MediaModel } from "../models/media.model.ts";
 
 const TMDB_IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
 type PopularMediaBannerProps = {
   imageSize?: string;
-} & (
-  | { mediaType: "movie"; media: TmdbMovieModel }
-  | { mediaType: "tv"; media: TmdbTvModel }
-);
+  media: MediaModel;
+};
 
 export function PopularMediaBanner(props: PopularMediaBannerProps) {
-  const { imageSize = "original", media, mediaType } = props;
+  const { imageSize = "original", media } = props;
 
-  const title = mediaType === "movie" ? media.title : media.name;
-  const backdropUrl = `${TMDB_IMAGE_BASE_URL}/${imageSize}${media.backdrop_path}`;
+  const backdropUrl = media.backdropPath
+    ? `${TMDB_IMAGE_BASE_URL}/${imageSize}${media.backdropPath}`
+    : null;
+  const backdropImage = backdropUrl ? `, url(${backdropUrl})` : "";
 
   return (
     <Box
@@ -40,7 +39,7 @@ export function PopularMediaBanner(props: PopularMediaBannerProps) {
     >
       <Box
         sx={{
-          backgroundImage: `linear-gradient(180deg, rgba(16, 16, 16, 0.08), rgba(16, 16, 16, 0.78)), linear-gradient(90deg, rgba(8, 8, 10, 0.96) 0%, rgba(8, 8, 10, 0.82) 34%, rgba(8, 8, 10, 0.44) 100%), url(${backdropUrl})`,
+          backgroundImage: `linear-gradient(180deg, rgba(16, 16, 16, 0.08), rgba(16, 16, 16, 0.78)), linear-gradient(90deg, rgba(8, 8, 10, 0.96) 0%, rgba(8, 8, 10, 0.82) 34%, rgba(8, 8, 10, 0.44) 100%)${backdropImage}`,
           backgroundPosition: "center",
           backgroundSize: "cover",
           bottom: 0,
@@ -82,7 +81,7 @@ export function PopularMediaBanner(props: PopularMediaBannerProps) {
             mb: { xs: 2, md: 3 },
           }}
         >
-          {title}
+          {media.title}
         </Typography>
 
         <Typography
