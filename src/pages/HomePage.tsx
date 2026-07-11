@@ -1,24 +1,25 @@
 import { Alert, AlertTitle, Box } from "@mui/material";
+import { useState } from "react";
 
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
-import { FeaturedMovieBanner } from "../components/FeaturedMovieBanner.tsx";
-import { usePopularMovies } from "../features/tmdb/hooks/usePopularMovies.ts";
-
-const featuredMovieRandomSeed = Math.random();
+import { PopularMediaBanner } from "../components/PopularMediaBanner.tsx";
+import { usePopularMedia } from "../features/tmdb/hooks/usePopularMedia.ts";
+import type { TmdbMediaType } from "../features/tmdb/types/tmdb-media.type.ts";
 
 export function HomePage() {
-  const popularMoviesQuery = usePopularMovies();
+  const [itemRandomSeed] = useState(() => Math.random());
+  const [mediaType] = useState<TmdbMediaType>(() =>
+    Math.random() < 0.5 ? "movie" : "tv",
+  );
 
-  const featuredMovie = popularMoviesQuery.data?.results
-    .filter((movie) => movie.backdrop_path)
-    .at(
-      Math.floor(
-        featuredMovieRandomSeed * popularMoviesQuery.data?.results.length,
-      ),
-    );
+  const popularMediaQuery = usePopularMedia(mediaType);
 
-  const isLoading = popularMoviesQuery.isLoading;
-  const isError = popularMoviesQuery.isError;
+  const popularMedia = popularMediaQuery.data?.results.at(
+    Math.floor(itemRandomSeed * popularMediaQuery.data?.results.length),
+  );
+
+  const isLoading = popularMediaQuery.isLoading;
+  const isError = popularMediaQuery.isError;
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -34,6 +35,13 @@ export function HomePage() {
   }
 
   return (
-    <Box>{featuredMovie && <FeaturedMovieBanner movie={featuredMovie} />}</Box>
+    <Box>
+      {popularMedia && mediaType === "movie" && "title" in popularMedia && (
+        <PopularMediaBanner media={popularMedia} mediaType="movie" />
+      )}
+      {popularMedia && mediaType === "tv" && "name" in popularMedia && (
+        <PopularMediaBanner media={popularMedia} mediaType="tv" />
+      )}
+    </Box>
   );
 }

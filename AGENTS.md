@@ -4,9 +4,14 @@
 
 This is **CineScope**, a React + Vite + TypeScript movie/TV application. Source code lives in `src/`.
 
-- `src/main.tsx`: app entry point; wraps React with Material UI providers.
-- `src/App.tsx`: root application component; renders the persistent app layout, including the shared header above route/page content.
+- `src/main.tsx`: app entry point; wraps React with the router, TanStack Query, and Material UI providers.
+- `src/App.tsx`: root application component; renders the persistent app layout and defines the home and media-detail routes.
 - `src/components/Header.tsx`: persistent CineScope header with the brand block on the left and a search field on the right. It should remain visible regardless of the active route.
+- `src/components/PopularMediaBanner.tsx`: home-page hero banner shared by popular movies and TV series. Its discriminated props must keep `mediaType` consistent with the corresponding TMDB model.
+- `src/features/tmdb/`: TMDB integration, split into the API client, TanStack Query hooks, response models, and shared media types.
+- `src/features/tmdb/hooks/usePopularMedia.ts`: typed popular-content query. It accepts `"movie" | "tv"`, includes that value in the query key, and makes only the matching TMDB request.
+- `src/pages/HomePage.tsx`: selects a stable random media type and popular result for the hero banner.
+- `src/const/app-url.const.ts`: shared application route constants; use these instead of duplicating route strings.
 - `src/theme/theme.ts`: Material UI theme configuration.
 - `src/assets/`: bundled images and static assets imported by React.
 - `src/assets/brand/logo.png`: CineScope logo used by the application. It has a transparent background and is intended to be imported from React components.
@@ -30,11 +35,15 @@ Install dependencies with `npm install`. Keep `package-lock.json` committed when
 Use TypeScript and React function components. Prefer explicit domain types for TMDB responses instead of `any`.
 
 - Components: `PascalCase`, for example `MovieCard.tsx`.
-- Hooks: `useCamelCase`, for example `usePopularMovies.ts`.
+- Hooks: `useCamelCase`, for example `usePopularMedia.ts`.
 - Utilities and API clients: `camelCase`, for example `tmdbClient.ts`.
 - Constants: `UPPER_SNAKE_CASE` only for true constants.
 
 Formatting uses Prettier, and linting uses ESLint. Keep imports tidy, avoid unused exports, and keep components focused on one responsibility.
+
+Keep movie and TV response models distinct because TMDB uses fields such as `title`/`release_date` for movies and `name`/`first_air_date` for TV series. Use `TmdbMediaType` and `TmdbMediaByType` when an API or hook supports both. For React components accepting either model, prefer discriminated unions keyed by `mediaType` so invalid model/type combinations fail at compile time.
+
+Use TanStack Query for server state. Query keys must include every input that changes the response, such as the media type. Hooks must be called unconditionally; choose dynamic endpoints inside the query function rather than conditionally invoking separate hooks.
 
 ## Branding & Assets
 
@@ -75,4 +84,4 @@ Pull requests should include a short description, testing notes, linked issues w
 
 ## Security & Configuration Tips
 
-Do not commit TMDB API keys. Store local secrets in `.env.local` and expose only Vite-safe variables prefixed with `VITE_`, for example `VITE_TMDB_API_KEY`.
+Do not commit TMDB credentials. Store local configuration in `.env.local` and expose only Vite-safe variables prefixed with `VITE_`. The TMDB client currently expects `VITE_TMDB_API_BASE_URL`, `VITE_TMDB_ACCESS_TOKEN`, and optionally `VITE_TMDB_LANGUAGE`; image components use `VITE_TMDB_IMAGE_BASE_URL`.

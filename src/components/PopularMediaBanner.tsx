@@ -5,19 +5,22 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { APP_URL } from "../const/app-url.const.ts";
 import type { TmdbMovieModel } from "../features/tmdb/models/tmdb-movie.model.ts";
+import type { TmdbTvModel } from "../features/tmdb/models/tmdb-tv.model.ts";
 
 const TMDB_IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
-type FeaturedMovieBannerProps = {
+type PopularMediaBannerProps = {
   imageSize?: string;
-  movie: TmdbMovieModel;
-};
+} & (
+  | { mediaType: "movie"; media: TmdbMovieModel }
+  | { mediaType: "tv"; media: TmdbTvModel }
+);
 
-export function FeaturedMovieBanner({
-  imageSize = "original",
-  movie,
-}: FeaturedMovieBannerProps) {
-  const backdropUrl = `${TMDB_IMAGE_BASE_URL}/${imageSize}${movie.backdrop_path}`;
+export function PopularMediaBanner(props: PopularMediaBannerProps) {
+  const { imageSize = "original", media, mediaType } = props;
+
+  const title = mediaType === "movie" ? media.title : media.name;
+  const backdropUrl = `${TMDB_IMAGE_BASE_URL}/${imageSize}${media.backdrop_path}`;
 
   return (
     <Box
@@ -79,7 +82,7 @@ export function FeaturedMovieBanner({
             mb: { xs: 2, md: 3 },
           }}
         >
-          {movie.title}
+          {title}
         </Typography>
 
         <Typography
@@ -95,7 +98,7 @@ export function FeaturedMovieBanner({
             WebkitLineClamp: { xs: 4, md: 3 },
           }}
         >
-          {movie.overview}
+          {media.overview}
         </Typography>
 
         <Box
@@ -109,7 +112,7 @@ export function FeaturedMovieBanner({
           <Button
             component={RouterLink}
             startIcon={<InfoOutlinedIcon />}
-            to={`${APP_URL.Movies}/${movie.id}`}
+            to={`${APP_URL.Media}/${media.id}`}
             variant="contained"
           >
             View details

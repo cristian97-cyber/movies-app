@@ -15,7 +15,7 @@ function App() {
         <Routes>
           <Route index element={<HomePage />} />
           <Route
-            path={`${APP_URL.Movies}/:movieId`}
+            path={`${APP_URL.Media}/:movieId`}
             element={<MovieDetailPage />}
           />
         </Routes>

@@ -1,11 +1,10 @@
-export interface TmdbMovieModel {
-  id: number;
+import type { TmdbMediaModel } from "./tmdb-media.model.ts";
+
+export interface TmdbMovieModel extends TmdbMediaModel {
   title: string;
-  overview: string;
-  backdrop_path: string | null;
-  poster_path: string | null;
+  original_title: string;
+  media_type: "movie";
+  adult: boolean;
   release_date: string;
-  vote_average: number;
-  popularity: number;
-  genre_ids: number[];
+  video: boolean;
 }
