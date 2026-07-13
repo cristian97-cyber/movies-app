@@ -42,7 +42,7 @@ export function MediaCard({ media }: MediaCardProps) {
       <CardActionArea
         aria-label={`View details for ${media.title}`}
         component={RouterLink}
-        to={`${APP_URL.Media}/${media.id}`}
+        to={`${APP_URL.Media}/${media.mediaType}/${media.id}`}
         sx={{ color: "inherit", flexGrow: 1, textAlign: "inherit" }}
       >
         <Box

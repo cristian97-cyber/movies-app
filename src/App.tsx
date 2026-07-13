@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 
 import { Header } from "./components/Header";
 import { HomePage } from "./pages/HomePage";
-import { MovieDetailPage } from "./pages/MovieDetailPage";
+import { MediaDetailPage } from "./pages/MediaDetailPage.tsx";
 import { APP_URL } from "./const/app-url.const.ts";
 
 function App() {
@@ -15,8 +15,8 @@ function App() {
         <Routes>
           <Route index element={<HomePage />} />
           <Route
-            path={`${APP_URL.Media}/:movieId`}
-            element={<MovieDetailPage />}
+            path={`${APP_URL.Media}/:mediaType/:id`}
+            element={<MediaDetailPage />}
           />
         </Routes>
       </Box>

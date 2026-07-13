@@ -1,4 +1,5 @@
 import type { TmdbPaginatedResponseModel } from "../models/tmdb-paginated-response.model.ts";
+import type { TmdbMediaDetailByType } from "../types/tmdb-media-detail-by.type.ts";
 import type { TmdbMediaType } from "../types/tmdb-media.type.ts";
 import type { TmdbMediaByType } from "../types/tmdb-media-by.type.ts";
 
@@ -65,5 +66,23 @@ export function discoverMedia<TMediaType extends TmdbMediaType>(
 
   return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMediaByType[TMediaType]>>(
     `/discover/${mediaType}?${searchParams.toString()}`,
+  );
+}
+
+export function getMediaDetail<TMediaType extends TmdbMediaType>(
+  mediaType: TMediaType,
+  mediaId: number,
+) {
+  const searchParams = new URLSearchParams({
+    append_to_response:
+      mediaType === "movie" ? "release_dates" : "content_ratings",
+  });
+
+  if (TMDB_LANGUAGE) {
+    searchParams.set("language", TMDB_LANGUAGE);
+  }
+
+  return fetchFromTmdb<TmdbMediaDetailByType[TMediaType]>(
+    `/${mediaType}/${mediaId}?${searchParams.toString()}`,
   );
 }

@@ -111,7 +111,7 @@ export function PopularMediaBanner(props: PopularMediaBannerProps) {
           <Button
             component={RouterLink}
             startIcon={<InfoOutlinedIcon />}
-            to={`${APP_URL.Media}/${media.id}`}
+            to={`${APP_URL.Media}/${media.mediaType}/${media.id}`}
             variant="contained"
           >
             View details
