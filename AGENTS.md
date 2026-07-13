@@ -8,6 +8,8 @@ This is **CineScope**, a React + Vite + TypeScript movie/TV application. Source 
 - `src/App.tsx`: root application component; renders the persistent app layout and defines the home and media-detail routes.
 - `src/components/Header.tsx`: persistent CineScope header with the brand block on the left and a search field on the right. It should remain visible regardless of the active route.
 - `src/components/PopularMediaBanner.tsx`: home-page hero banner shared by popular movies and TV series; it consumes the normalized `MediaModel` used by the UI.
+- `src/components/MediaList.tsx`: paginated responsive catalog grid. It renders 1/2/3/4/5 columns across the `xs`/`sm`/`md`/`lg`/`xl` breakpoints so card actions remain readable on one line.
+- `src/components/MediaCard.tsx`: normalized media presentation. Poster and metadata link to the shared media-detail route, while the separate watchlist button is currently visual-only.
 - `src/models/`: backend-independent UI/domain models consumed by pages and components, including normalized `MediaModel` and `PaginatedMediaModel`.
 - `src/features/tmdb/`: TMDB integration, split into the API client, TanStack Query hooks, response models, and shared media types.
 - `src/features/tmdb/mappers/tmdb-media.mapper.ts`: normalization boundary from TMDB movie/TV DTOs and snake_case pagination fields to the shared camelCase UI models.
@@ -46,6 +48,8 @@ Formatting uses Prettier, and linting uses ESLint. Keep imports tidy, avoid unus
 Keep movie and TV response models distinct inside the TMDB layer because the backend uses fields such as `title`/`release_date` for movies and `name`/`first_air_date` for TV series. Normalize those DTOs through the TMDB mapper and expose the backend-independent `MediaModel` and `PaginatedMediaModel` from `src/models/` to pages and components. UI components should not import TMDB movie/TV response models, read snake_case backend fields, or duplicate movie/TV mapping logic.
 
 Use TanStack Query for server state. Query keys must include every input that changes the response, such as media type and page. Hooks must be called unconditionally; choose dynamic endpoints inside the query function rather than conditionally invoking separate hooks. Keep cached query-function results faithful to TMDB and use `select` with the shared mapper to expose normalized UI models.
+
+Do not nest buttons or other interactive controls inside links. For media cards, keep the detail `CardActionArea` and watchlist action as sibling controls. Preserve `APP_URL` route constants and accessible labels when adding card navigation. Keep the watchlist button label on one line until a shorter responsive label is intentionally designed.
 
 ## Branding & Assets
 
