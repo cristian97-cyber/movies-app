@@ -30,7 +30,7 @@ export function mapTmdbPaginatedMedia<TMediaType extends TmdbMediaType>(
   };
 }
 
-function mapTmdbMedia<TMediaType extends TmdbMediaType>(
+export function mapTmdbMedia<TMediaType extends TmdbMediaType>(
   mediaType: TMediaType,
   media: TmdbMediaByType[TMediaType],
 ): MediaModel {
@@ -58,7 +58,7 @@ function mapTmdbMedia<TMediaType extends TmdbMediaType>(
     posterPath: media.poster_path,
     backdropPath: media.backdrop_path,
     releaseDate,
-    releaseYear: releaseDate?.slice(0, 4) || "TBA",
+    releaseYear: releaseDate?.slice(0, 4) || "N/D",
     genreIds: media.genre_ids,
     popularity: media.popularity,
     rating: media.vote_average,

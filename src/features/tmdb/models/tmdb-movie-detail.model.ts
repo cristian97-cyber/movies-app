@@ -1,4 +1,7 @@
 import type { TmdbMediaDetailModel } from "./tmdb-media-detail.model.ts";
+import type { TmdbMovieModel } from "./tmdb-movie.model.ts";
+import type { TmdbPaginatedResponseModel } from "./tmdb-paginated-response.model.ts";
+import type { TmdbMovieCastMemberModel } from "./tmdb-movie-cast-member.model.ts";
 
 export interface TmdbMovieDetailModel extends TmdbMediaDetailModel {
   title: string;
@@ -8,6 +11,10 @@ export interface TmdbMovieDetailModel extends TmdbMediaDetailModel {
   release_dates: {
     results: TmdbMovieReleaseDatesByCountryModel[];
   };
+  credits: {
+    cast: TmdbMovieCastMemberModel[];
+  };
+  recommendations: TmdbPaginatedResponseModel<TmdbMovieModel>;
 }
 
 export interface TmdbMovieReleaseDateModel {

@@ -4,11 +4,12 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import LocalMoviesOutlinedIcon from "@mui/icons-material/LocalMoviesOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Chip, Typography } from "@mui/material";
+import { type ReactNode, useState } from "react";
 
 import type { MediaDetailModel } from "../models/media-detail.model.ts";
 import { formatDuration } from "../utils/utils.ts";
-import { MetadataItem } from "./MetadataItem.tsx";
+import { MediaTrailer } from "./MediaTrailer.tsx";
 
 const TMDB_IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
@@ -17,6 +18,8 @@ type MediaDetailHeaderProps = {
 };
 
 export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
+
   const backdropUrl = media.backdropPath
     ? `${TMDB_IMAGE_BASE_URL}/original${media.backdropPath}`
     : null;
@@ -24,7 +27,7 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
     ? `${TMDB_IMAGE_BASE_URL}/w500${media.posterPath}`
     : null;
   const formattedDuration = formatDuration(media.durationMinutes);
-  const formattedVoteCount = new Intl.NumberFormat("en-US").format(
+  const formattedVoteCount = new Intl.NumberFormat("it-IT").format(
     media.voteCount,
   );
 
@@ -81,7 +84,7 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
         >
           {posterUrl ? (
             <Box
-              alt={`${media.title} poster`}
+              alt={`Locandina di ${media.title}`}
               component="img"
               src={posterUrl}
               sx={{ height: "100%", objectFit: "cover", width: "100%" }}
@@ -101,7 +104,7 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
               }}
             >
               <LocalMoviesOutlinedIcon sx={{ fontSize: 52 }} />
-              <Typography variant="body2">Poster unavailable</Typography>
+              <Typography variant="body2">Locandina non disponibile</Typography>
             </Box>
           )}
         </Box>
@@ -123,7 +126,7 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
               mb: 2,
             }}
           >
-            {media.mediaType === "movie" ? "MOVIE" : "TV SERIES"}
+            {media.mediaType === "movie" ? "FILM" : "SERIE TV"}
           </Typography>
 
           <Typography
@@ -161,6 +164,38 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
             ) : null}
           </Box>
 
+          {media.genres.length > 0 ? (
+            <Box
+              aria-label="Generi"
+              component="ul"
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 1,
+                justifyContent: { xs: "center", md: "flex-start" },
+                listStyle: "none",
+                m: 0,
+                mt: 3,
+                p: 0,
+              }}
+            >
+              {media.genres.map((genre) => (
+                <Chip
+                  component="li"
+                  key={genre.id}
+                  label={genre.name}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    bgcolor: "rgba(0, 184, 169, 0.08)",
+                    borderColor: "secondary.main",
+                    color: "secondary.light",
+                  }}
+                />
+              ))}
+            </Box>
+          ) : null}
+
           <Box
             sx={{
               alignItems: "center",
@@ -186,19 +221,23 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
               }}
             />
             <Typography color="rgba(255, 255, 255, 0.68)" variant="body2">
-              {formattedVoteCount} votes
+              {formattedVoteCount} voti
             </Typography>
           </Box>
 
           <Typography
             sx={{
               color: "rgba(255, 255, 255, 0.78)",
+              display: "-webkit-box",
               fontSize: { xs: "1rem", md: "1.15rem" },
               lineHeight: 1.6,
               mt: 3,
+              overflow: "hidden",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: { xs: 3, md: 2 },
             }}
           >
-            {media.overview || "No overview available."}
+            {media.overview || "Nessuna descrizione disponibile."}
           </Typography>
 
           <Box
@@ -211,25 +250,49 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
             }}
           >
             <Button
-              aria-label={`Add ${media.title} to watchlist`}
+              aria-label={`Aggiungi ${media.title} alla watchlist`}
               startIcon={<BookmarkAddOutlinedIcon />}
               type="button"
               variant="contained"
             >
-              Add to watchlist
+              Aggiungi alla watchlist
             </Button>
             <Button
-              aria-label={`Watch trailer for ${media.title}`}
+              aria-label={`Guarda il trailer di ${media.title}`}
               color="secondary"
+              disabled={media.trailer === null}
+              onClick={() => setIsTrailerOpen(true)}
               startIcon={<PlayArrowOutlinedIcon />}
               type="button"
               variant="outlined"
             >
-              Watch trailer
+              Guarda il trailer
             </Button>
           </Box>
         </Box>
       </Box>
+      <MediaTrailer
+        onClose={() => setIsTrailerOpen(false)}
+        open={isTrailerOpen}
+        title={media.title}
+        trailerUrl={media.trailer}
+      />
+    </Box>
+  );
+}
+
+type MetadataItemProps = {
+  icon: ReactNode;
+  label: string;
+};
+
+export function MetadataItem({ icon, label }: MetadataItemProps) {
+  return (
+    <Box sx={{ alignItems: "center", display: "flex", gap: 1 }}>
+      {icon}
+      <Typography component="span" variant="body1">
+        {label}
+      </Typography>
     </Box>
   );
 }

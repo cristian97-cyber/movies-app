@@ -69,7 +69,7 @@ export function PopularMediaBanner(props: PopularMediaBannerProps) {
             mb: { xs: 2, md: 3 },
           }}
         >
-          TRENDING NOW
+          IN TENDENZA
         </Typography>
 
         <Typography
@@ -97,7 +97,7 @@ export function PopularMediaBanner(props: PopularMediaBannerProps) {
             WebkitLineClamp: { xs: 4, md: 3 },
           }}
         >
-          {media.overview}
+          {media.overview || "Nessuna descrizione disponibile."}
         </Typography>
 
         <Box
@@ -114,10 +114,14 @@ export function PopularMediaBanner(props: PopularMediaBannerProps) {
             to={`${APP_URL.Media}/${media.mediaType}/${media.id}`}
             variant="contained"
           >
-            View details
+            Vedi dettagli
           </Button>
-          <Button startIcon={<BookmarkAddOutlinedIcon />} variant="outlined">
-            Add to watchlist
+          <Button
+            aria-label={`Aggiungi ${media.title} alla watchlist`}
+            startIcon={<BookmarkAddOutlinedIcon />}
+            variant="outlined"
+          >
+            Aggiungi alla watchlist
           </Button>
         </Box>
       </Box>

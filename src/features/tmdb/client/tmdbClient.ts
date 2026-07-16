@@ -5,7 +5,7 @@ import type { TmdbMediaByType } from "../types/tmdb-media-by.type.ts";
 
 const TMDB_API_BASE_URL = import.meta.env.VITE_TMDB_API_BASE_URL;
 const TMDB_ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
-const TMDB_LANGUAGE = import.meta.env.VITE_TMDB_LANGUAGE;
+const TMDB_LANGUAGE = import.meta.env.VITE_TMDB_LANGUAGE || "it-IT";
 
 function assertTmdbConfig() {
   if (!TMDB_API_BASE_URL) {
@@ -43,9 +43,7 @@ export function getPopularMedia<TMediaType extends TmdbMediaType>(
     page: "1",
   });
 
-  if (TMDB_LANGUAGE) {
-    searchParams.set("language", TMDB_LANGUAGE);
-  }
+  searchParams.set("language", TMDB_LANGUAGE);
 
   return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMediaByType[TMediaType]>>(
     `/${mediaType}/popular?${searchParams.toString()}`,
@@ -60,9 +58,7 @@ export function discoverMedia<TMediaType extends TmdbMediaType>(
     page: String(Math.max(1, Math.trunc(page))),
   });
 
-  if (TMDB_LANGUAGE) {
-    searchParams.set("language", TMDB_LANGUAGE);
-  }
+  searchParams.set("language", TMDB_LANGUAGE);
 
   return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMediaByType[TMediaType]>>(
     `/discover/${mediaType}?${searchParams.toString()}`,
@@ -75,12 +71,12 @@ export function getMediaDetail<TMediaType extends TmdbMediaType>(
 ) {
   const searchParams = new URLSearchParams({
     append_to_response:
-      mediaType === "movie" ? "release_dates" : "content_ratings",
+      mediaType === "movie"
+        ? "release_dates,credits,recommendations,videos"
+        : "content_ratings,aggregate_credits,recommendations,videos",
   });
 
-  if (TMDB_LANGUAGE) {
-    searchParams.set("language", TMDB_LANGUAGE);
-  }
+  searchParams.set("language", TMDB_LANGUAGE);
 
   return fetchFromTmdb<TmdbMediaDetailByType[TMediaType]>(
     `/${mediaType}/${mediaId}?${searchParams.toString()}`,

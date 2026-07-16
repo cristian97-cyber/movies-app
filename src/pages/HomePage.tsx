@@ -16,12 +16,18 @@ export function HomePage() {
   const [listPage, setListPage] = useState(1);
   const [listMediaType] = useState<TmdbMediaType>("movie");
 
+  const previousListPage = useRef(listPage);
   const sectionRef = useRef<HTMLElement>(null);
 
   const popularMediaQuery = usePopularMedia(bannerMediaType);
   const discoverMediaQuery = useDiscoverMedia(listMediaType, listPage);
 
   useEffect(() => {
+    if (previousListPage.current === listPage) {
+      return;
+    }
+
+    previousListPage.current = listPage;
     sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [listPage]);
 
@@ -29,7 +35,7 @@ export function HomePage() {
     Math.floor(itemRandomSeed * popularMediaQuery.data?.results.length),
   );
 
-  const contentType = listMediaType === "movie" ? "movies" : "TV series";
+  const contentType = listMediaType === "movie" ? "film" : "serie TV";
   const isThereMedia =
     !discoverMediaQuery.isLoading &&
     !discoverMediaQuery.isError &&
@@ -49,9 +55,9 @@ export function HomePage() {
       {popularMediaQuery.isLoading && <LoadingSpinner />}
       {popularMediaQuery.isError && (
         <Alert severity="error" variant="outlined" sx={{ m: 3 }}>
-          <AlertTitle>Unable to load featured content</AlertTitle>
-          An error occurred while loading popular content. Please try again
-          later.
+          <AlertTitle>Impossibile caricare i contenuti in evidenza</AlertTitle>
+          Si è verificato un errore durante il caricamento dei contenuti
+          popolari. Riprova più tardi.
         </Alert>
       )}
 
@@ -69,19 +75,19 @@ export function HomePage() {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Box>
             <Typography component="h2" variant="h4" sx={{ mb: 1 }}>
-              Discover {contentType}
+              Scopri {contentType}
             </Typography>
             <Typography color="text.secondary" variant="body1">
-              Explore titles selected from the TMDB catalog.
+              Esplora i titoli selezionati dal catalogo TMDB.
             </Typography>
           </Box>
 
           {discoverMediaQuery.isLoading && <LoadingSpinner />}
           {discoverMediaQuery.isError && (
             <Alert severity="error" variant="outlined">
-              <AlertTitle>Unable to load {contentType}</AlertTitle>
-              An error occurred while loading {contentType}. Please try again
-              later.
+              <AlertTitle>Impossibile caricare {contentType}</AlertTitle>
+              Si è verificato un errore durante il caricamento. Riprova più
+              tardi.
             </Alert>
           )}
           {!isThereMedia && (
@@ -96,10 +102,10 @@ export function HomePage() {
               }}
             >
               <Typography sx={{ fontWeight: 700 }}>
-                No {contentType} found
+                Nessun contenuto trovato
               </Typography>
               <Typography variant="body2">
-                There are no movies for the selected filters
+                Non ci sono {contentType} per i filtri selezionati.
               </Typography>
             </Box>
           )}

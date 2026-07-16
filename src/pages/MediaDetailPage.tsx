@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 import { MediaDetailHeader } from "../components/MediaDetailHeader.tsx";
+import { MovieDetailContent } from "../components/MovieDetailContent.tsx";
 import { useMediaDetail } from "../features/tmdb/hooks/useMediaDetail.ts";
 import type { TmdbMediaType } from "../features/tmdb/types/tmdb-media.type.ts";
 
@@ -24,13 +25,17 @@ export function MediaDetailPage() {
       {mediaDetailQuery.isLoading && <LoadingSpinner />}
       {mediaDetailQuery.isError && (
         <Alert severity="error" variant="outlined" sx={{ m: 3 }}>
-          <AlertTitle>Unable to load media details</AlertTitle>
-          An error occurred while loading this title. Please try again later.
+          <AlertTitle>Impossibile caricare i dettagli</AlertTitle>
+          Si è verificato un errore durante il caricamento del titolo. Riprova
+          più tardi.
         </Alert>
       )}
 
       {mediaDetailQuery.data && (
-        <MediaDetailHeader media={mediaDetailQuery.data} />
+        <>
+          <MediaDetailHeader media={mediaDetailQuery.data} />
+          <MovieDetailContent media={mediaDetailQuery.data} />
+        </>
       )}
     </Box>
   );

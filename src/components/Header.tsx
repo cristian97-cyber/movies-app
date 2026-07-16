@@ -7,6 +7,8 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+import { APP_URL } from "../const/app-url.const.ts";
 
 export function Header() {
   return (
@@ -32,12 +34,23 @@ export function Header() {
         }}
       >
         <Box
+          aria-label="Vai alla home di CineScope"
+          component={RouterLink}
+          to={APP_URL.Index}
           sx={{
             alignItems: "center",
+            color: "inherit",
             display: "flex",
             flexShrink: 0,
             gap: { xs: 1.5, md: 2 },
             minWidth: { sm: 340 },
+            textDecoration: "none",
+            "&:focus-visible": {
+              borderRadius: 2,
+              outline: "3px solid",
+              outlineColor: "primary.main",
+              outlineOffset: 4,
+            },
           }}
         >
           <Box
@@ -75,17 +88,17 @@ export function Header() {
                 mt: 0.5,
               }}
             >
-              Movies, shows, and saved picks
+              Film, serie tv e scelte salvate
             </Typography>
           </Box>
         </Box>
 
         <TextField
           fullWidth
-          placeholder="Search title"
+          placeholder="Cerca un titolo"
           slotProps={{
             htmlInput: {
-              "aria-label": "Search title",
+              "aria-label": "Cerca un titolo",
             },
             input: {
               startAdornment: (

@@ -26,7 +26,7 @@ export function MediaList(props: MediaListSharedProps) {
     <>
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Typography color="text.secondary" variant="body2">
-          {totalResults.toLocaleString()} results
+          {totalResults.toLocaleString("it-IT")} risultati
         </Typography>
       </Box>
 
@@ -57,6 +57,24 @@ export function MediaList(props: MediaListSharedProps) {
             color="primary"
             count={totalPages}
             disabled={isFetching}
+            getItemAriaLabel={(type, itemPage, selected) => {
+              if (type === "page") {
+                return selected
+                  ? `Pagina ${itemPage}, pagina corrente`
+                  : `Vai alla pagina ${itemPage}`;
+              }
+
+              const labels = {
+                first: "Vai alla prima pagina",
+                last: "Vai all'ultima pagina",
+                next: "Vai alla pagina successiva",
+                previous: "Vai alla pagina precedente",
+                "start-ellipsis": "Altre pagine",
+                "end-ellipsis": "Altre pagine",
+              };
+
+              return labels[type];
+            }}
             onChange={handlePageChange}
             page={Math.min(Math.max(page, 1), totalPages)}
             showFirstButton

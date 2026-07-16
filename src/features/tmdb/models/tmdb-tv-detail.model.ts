@@ -1,4 +1,7 @@
 import type { TmdbMediaDetailModel } from "./tmdb-media-detail.model.ts";
+import type { TmdbPaginatedResponseModel } from "./tmdb-paginated-response.model.ts";
+import type { TmdbTvModel } from "./tmdb-tv.model.ts";
+import type { TmdbTvCastMemberModel } from "./tmdb-tv-cast-member.model.ts";
 
 export interface TmdbTvDetailModel extends TmdbMediaDetailModel {
   name: string;
@@ -10,6 +13,10 @@ export interface TmdbTvDetailModel extends TmdbMediaDetailModel {
   content_ratings: {
     results: TmdbTvContentRatingModel[];
   };
+  aggregate_credits: {
+    cast: TmdbTvCastMemberModel[];
+  };
+  recommendations: TmdbPaginatedResponseModel<TmdbTvModel>;
 }
 
 export interface TmdbTvContentRatingModel {

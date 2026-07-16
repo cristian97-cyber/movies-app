@@ -1,5 +1,6 @@
 import type { TmdbGenreModel } from "./tmdb-genre.model.ts";
 import type { TmdbProductionCompanyModel } from "./tmdb-production-company.model.ts";
+import type { TmdbVideoModel } from "./tmdb-video.model.ts";
 
 export interface TmdbMediaDetailModel {
   id: number;
@@ -14,4 +15,7 @@ export interface TmdbMediaDetailModel {
   tagline: string;
   vote_average: number;
   vote_count: number;
+  videos: {
+    results: TmdbVideoModel[];
+  };
 }

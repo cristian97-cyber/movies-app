@@ -40,7 +40,7 @@ export function MediaCard({ media }: MediaCardProps) {
       }}
     >
       <CardActionArea
-        aria-label={`View details for ${media.title}`}
+        aria-label={`Visualizza i dettagli di ${media.title}`}
         component={RouterLink}
         to={`${APP_URL.Media}/${media.mediaType}/${media.id}`}
         sx={{ color: "inherit", flexGrow: 1, textAlign: "inherit" }}
@@ -55,7 +55,7 @@ export function MediaCard({ media }: MediaCardProps) {
         >
           {posterUrl ? (
             <Box
-              alt={`${media.title} poster`}
+              alt={`Locandina di ${media.title}`}
               component="img"
               loading="lazy"
               src={posterUrl}
@@ -76,7 +76,7 @@ export function MediaCard({ media }: MediaCardProps) {
               }}
             >
               <LocalMoviesOutlinedIcon sx={{ fontSize: 44 }} />
-              <Typography variant="body2">Poster unavailable</Typography>
+              <Typography variant="body2">Locandina non disponibile</Typography>
             </Box>
           )}
 
@@ -93,7 +93,7 @@ export function MediaCard({ media }: MediaCardProps) {
             }}
           >
             <Chip
-              label={media.mediaType === "movie" ? "Movie" : "TV series"}
+              label={media.mediaType === "movie" ? "Film" : "Serie TV"}
               size="small"
               sx={{
                 bgcolor: "rgba(16, 16, 16, 0.78)",
@@ -141,12 +141,13 @@ export function MediaCard({ media }: MediaCardProps) {
       </CardActionArea>
 
       <Button
+        aria-label={`Aggiungi ${media.title} alla watchlist`}
         startIcon={<BookmarkAddOutlinedIcon />}
         type="button"
         variant="contained"
         sx={{ m: 2, mt: 0, whiteSpace: "nowrap" }}
       >
-        Add to watchlist
+        Aggiungi alla watchlist
       </Button>
     </Card>
   );
