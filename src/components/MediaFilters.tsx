@@ -30,7 +30,7 @@ type MoviesFiltersProps = {
 
 const DEFAULT_MEDIA_TYPE: TmdbMediaType = "movie";
 const DEFAULT_GENRE = "";
-const DEFAULT_SORT: TmdbSortByType = "popularity.desc";
+const DEFAULT_SORT_BY: TmdbSortByType = "popularity.desc";
 
 export function MediaFilters({
   mediaType,
@@ -45,7 +45,7 @@ export function MediaFilters({
   const hasActiveFilters =
     mediaType !== DEFAULT_MEDIA_TYPE ||
     genre !== DEFAULT_GENRE ||
-    sortBy !== DEFAULT_SORT;
+    sortBy !== DEFAULT_SORT_BY;
 
   const onMediaTypeChange = (
     _event: MouseEvent<HTMLElement>,
@@ -53,8 +53,6 @@ export function MediaFilters({
   ) => {
     if (nextMediaType && nextMediaType !== mediaType) {
       handleMediaTypeChange(nextMediaType);
-      handleGenreChange(DEFAULT_GENRE);
-      handleSortByChange(DEFAULT_SORT);
     }
   };
 
@@ -65,7 +63,7 @@ export function MediaFilters({
   const handleReset = () => {
     handleMediaTypeChange(DEFAULT_MEDIA_TYPE);
     handleGenreChange(DEFAULT_GENRE);
-    handleSortByChange(DEFAULT_SORT);
+    handleSortByChange(DEFAULT_SORT_BY);
   };
 
   return (

@@ -10,17 +10,42 @@ import { MediaList } from "../components/MediaList.tsx";
 import { MediaFilters } from "../components/MediaFilters.tsx";
 import { useMediaGenres } from "../features/tmdb/hooks/useMediaGenres.ts";
 import type { TmdbSortByType } from "../features/tmdb/types/tmdb-sort-by.type.ts";
+import { useSearchParams } from "react-router-dom";
 
 export function HomePage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const getListPage = function (): number {
+    const page = searchParams.get("page");
+    if (!page || isNaN(Number.parseInt(page))) return 1;
+
+    return Number.parseInt(page);
+  };
+
+  const getListMediaType = function (): TmdbMediaType {
+    const mediaType = searchParams.get("mediaType");
+    if (!mediaType) return "movie";
+
+    return mediaType as TmdbMediaType;
+  };
+
+  const getListGenre = function (): string {
+    return searchParams.get("genre") || "";
+  };
+
+  const getListSortBy = function (): TmdbSortByType {
+    return (searchParams.get("sortBy") as TmdbSortByType) || "popularity.desc";
+  };
+
+  const listPage = getListPage();
+  const listMediaType = getListMediaType();
+  const listGenre = getListGenre();
+  const listSortBy = getListSortBy();
+
   const [itemRandomSeed] = useState(() => Math.random());
   const [bannerMediaType] = useState<TmdbMediaType>(() =>
     Math.random() < 0.5 ? "movie" : "tv",
   );
-  const [listPage, setListPage] = useState(1);
-  const [listMediaType, setListMediaType] = useState<TmdbMediaType>("movie");
-  const [listGenre, setListGenre] = useState<string>("");
-  const [listSortBy, setListSortBy] =
-    useState<TmdbSortByType>("popularity.desc");
 
   const previousListPage = useRef(listPage);
   const sectionRef = useRef<HTMLElement>(null);
@@ -56,19 +81,36 @@ export function HomePage() {
     discoverMediaQuery.data.results.length > 0;
 
   const handleListPageChange = function (page: number) {
-    setListPage(page);
+    setSearchParams((params) => {
+      params.set("page", page.toString());
+      return params;
+    });
   };
 
   const handleMediaTypeChange = function (mediaType: TmdbMediaType) {
-    setListMediaType(mediaType);
+    setSearchParams((params) => {
+      params.set("mediaType", mediaType);
+      params.delete("genre");
+      params.delete("sortBy");
+      params.delete("page");
+      return params;
+    });
   };
 
   const handleListGenreChange = function (genre: string) {
-    setListGenre(genre);
+    setSearchParams((params) => {
+      params.set("genre", genre);
+      params.delete("page");
+      return params;
+    });
   };
 
-  const handleListSortByChange = function (orderBy: TmdbSortByType) {
-    setListSortBy(orderBy);
+  const handleListSortByChange = function (sortBy: TmdbSortByType) {
+    setSearchParams((params) => {
+      params.set("sortBy", sortBy);
+      params.delete("page");
+      return params;
+    });
   };
 
   return (
