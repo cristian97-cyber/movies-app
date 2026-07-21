@@ -8,10 +8,18 @@ type MediaListSharedProps = {
   isFetching: boolean;
   totalPages: number;
   handlePageChange: (newPage: number) => void;
+  onMediaNavigate?: () => void;
 };
 
 export function MediaList(props: MediaListSharedProps) {
-  const { media, page, isFetching, totalPages, handlePageChange } = props;
+  const {
+    media,
+    page,
+    isFetching,
+    totalPages,
+    handlePageChange,
+    onMediaNavigate,
+  } = props;
 
   return (
     <>
@@ -32,7 +40,11 @@ export function MediaList(props: MediaListSharedProps) {
         }}
       >
         {media.map((media) => (
-          <MediaCard key={media.id} media={media} />
+          <MediaCard
+            key={`${media.mediaType}-${media.id}`}
+            media={media}
+            onNavigate={onMediaNavigate}
+          />
         ))}
       </Box>
 

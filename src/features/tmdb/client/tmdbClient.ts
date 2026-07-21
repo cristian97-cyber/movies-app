@@ -4,6 +4,7 @@ import type { TmdbMediaType } from "../types/tmdb-media.type.ts";
 import type { TmdbMediaByType } from "../types/tmdb-media-by.type.ts";
 import type { TmdbGenresResponseModel } from "../models/tmdb-genres-response.model.ts";
 import type { TmdbSortByType } from "../types/tmdb-sort-by.type.ts";
+import type { TmdbMultiSearchResponse } from "../models/tmdb-multi-search-response.model.ts";
 import { formatLocalDate } from "../../../utils/utils.ts";
 
 const TMDB_API_BASE_URL = import.meta.env.VITE_TMDB_API_BASE_URL;
@@ -44,9 +45,8 @@ export function getPopularMedia<TMediaType extends TmdbMediaType>(
 ) {
   const searchParams = new URLSearchParams({
     page: "1",
+    language: TMDB_LANGUAGE,
   });
-
-  searchParams.set("language", TMDB_LANGUAGE);
 
   return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMediaByType[TMediaType]>>(
     `/${mediaType}/popular?${searchParams.toString()}`,
@@ -61,15 +61,13 @@ export function discoverMedia<TMediaType extends TmdbMediaType>(
 ) {
   const searchParams = new URLSearchParams({
     page: String(Math.max(1, Math.trunc(page))),
+    sort_by: sortBy,
+    language: TMDB_LANGUAGE,
   });
-
-  const today = formatLocalDate(new Date());
 
   if (genre) searchParams.set("with_genres", String(genre));
 
-  searchParams.set("sort_by", sortBy);
-  searchParams.set("language", TMDB_LANGUAGE);
-
+  const today = formatLocalDate(new Date());
   if (sortBy === "vote_average.desc") {
     searchParams.set("vote_count.gte", "200");
   } else if (sortBy === "primary_release_date.desc") {
@@ -92,9 +90,8 @@ export function getMediaDetail<TMediaType extends TmdbMediaType>(
       mediaType === "movie"
         ? "release_dates,credits,recommendations,videos"
         : "content_ratings,aggregate_credits,recommendations,videos",
+    language: TMDB_LANGUAGE,
   });
-
-  searchParams.set("language", TMDB_LANGUAGE);
 
   return fetchFromTmdb<TmdbMediaDetailByType[TMediaType]>(
     `/${mediaType}/${mediaId}?${searchParams.toString()}`,
@@ -104,10 +101,26 @@ export function getMediaDetail<TMediaType extends TmdbMediaType>(
 export function getMediaGenres<TMediaType extends TmdbMediaType>(
   mediaType: TMediaType,
 ) {
-  const searchParams = new URLSearchParams({});
-  searchParams.set("language", TMDB_LANGUAGE);
+  const searchParams = new URLSearchParams({
+    language: TMDB_LANGUAGE,
+  });
 
   return fetchFromTmdb<TmdbGenresResponseModel>(
     `/genre/${mediaType}/list?${searchParams.toString()}`,
+  );
+}
+
+export function searchMultiMedia(
+  query: string,
+  page: number,
+): Promise<TmdbMultiSearchResponse> {
+  const searchParams = new URLSearchParams({
+    query: query.trim(),
+    page: String(page),
+    language: TMDB_LANGUAGE,
+  });
+
+  return fetchFromTmdb<TmdbMultiSearchResponse>(
+    `/search/multi?${searchParams.toString()}`,
   );
 }

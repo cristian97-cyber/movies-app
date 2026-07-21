@@ -17,9 +17,10 @@ const TMDB_IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
 type MediaCardProps = {
   media: MediaModel;
+  onNavigate?: () => void;
 };
 
-export function MediaCard({ media }: MediaCardProps) {
+export function MediaCard({ media, onNavigate }: MediaCardProps) {
   const posterUrl = media.posterPath
     ? `${TMDB_IMAGE_BASE_URL}/w500${media.posterPath}`
     : null;
@@ -42,6 +43,7 @@ export function MediaCard({ media }: MediaCardProps) {
       <CardActionArea
         aria-label={`Visualizza i dettagli di ${media.title}`}
         component={RouterLink}
+        onClick={onNavigate}
         to={`${APP_URL.Media}/${media.mediaType}/${media.id}`}
         sx={{ color: "inherit", flexGrow: 1, textAlign: "inherit" }}
       >
