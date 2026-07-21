@@ -2,6 +2,9 @@ import type { TmdbPaginatedResponseModel } from "../models/tmdb-paginated-respon
 import type { TmdbMediaDetailByType } from "../types/tmdb-media-detail-by.type.ts";
 import type { TmdbMediaType } from "../types/tmdb-media.type.ts";
 import type { TmdbMediaByType } from "../types/tmdb-media-by.type.ts";
+import type { TmdbGenresResponseModel } from "../models/tmdb-genres-response.model.ts";
+import type { TmdbSortByType } from "../types/tmdb-sort-by.type.ts";
+import { formatLocalDate } from "../../../utils/utils.ts";
 
 const TMDB_API_BASE_URL = import.meta.env.VITE_TMDB_API_BASE_URL;
 const TMDB_ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
@@ -53,12 +56,27 @@ export function getPopularMedia<TMediaType extends TmdbMediaType>(
 export function discoverMedia<TMediaType extends TmdbMediaType>(
   mediaType: TMediaType,
   page: number,
+  genre: string,
+  sortBy: TmdbSortByType,
 ) {
   const searchParams = new URLSearchParams({
     page: String(Math.max(1, Math.trunc(page))),
   });
 
+  const today = formatLocalDate(new Date());
+
+  if (genre) searchParams.set("with_genres", String(genre));
+
+  searchParams.set("sort_by", sortBy);
   searchParams.set("language", TMDB_LANGUAGE);
+
+  if (sortBy === "vote_average.desc") {
+    searchParams.set("vote_count.gte", "200");
+  } else if (sortBy === "primary_release_date.desc") {
+    searchParams.set("primary_release_date.lte", today);
+  } else if (sortBy === "first_air_date.desc") {
+    searchParams.set("first_air_date.lte", today);
+  }
 
   return fetchFromTmdb<TmdbPaginatedResponseModel<TmdbMediaByType[TMediaType]>>(
     `/discover/${mediaType}?${searchParams.toString()}`,
@@ -80,5 +98,16 @@ export function getMediaDetail<TMediaType extends TmdbMediaType>(
 
   return fetchFromTmdb<TmdbMediaDetailByType[TMediaType]>(
     `/${mediaType}/${mediaId}?${searchParams.toString()}`,
+  );
+}
+
+export function getMediaGenres<TMediaType extends TmdbMediaType>(
+  mediaType: TMediaType,
+) {
+  const searchParams = new URLSearchParams({});
+  searchParams.set("language", TMDB_LANGUAGE);
+
+  return fetchFromTmdb<TmdbGenresResponseModel>(
+    `/genre/${mediaType}/list?${searchParams.toString()}`,
   );
 }

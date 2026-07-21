@@ -1,5 +1,4 @@
-import { Box, Pagination, Typography } from "@mui/material";
-import type { ChangeEvent } from "react";
+import { Box, Pagination } from "@mui/material";
 import type { MediaModel } from "../models/media.model.ts";
 import { MediaCard } from "./MediaCard.tsx";
 
@@ -8,28 +7,14 @@ type MediaListSharedProps = {
   page: number;
   isFetching: boolean;
   totalPages: number;
-  totalResults: number;
-  handlePageChange: (_event: ChangeEvent<unknown>, newPage: number) => void;
+  handlePageChange: (newPage: number) => void;
 };
 
 export function MediaList(props: MediaListSharedProps) {
-  const {
-    media,
-    page,
-    isFetching,
-    totalPages,
-    totalResults,
-    handlePageChange,
-  } = props;
+  const { media, page, isFetching, totalPages, handlePageChange } = props;
 
   return (
     <>
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <Typography color="text.secondary" variant="body2">
-          {totalResults.toLocaleString("it-IT")} risultati
-        </Typography>
-      </Box>
-
       <Box
         aria-busy={isFetching}
         sx={{
@@ -75,7 +60,7 @@ export function MediaList(props: MediaListSharedProps) {
 
               return labels[type];
             }}
-            onChange={handlePageChange}
+            onChange={(_event, newPage) => handlePageChange(newPage)}
             page={Math.min(Math.max(page, 1), totalPages)}
             showFirstButton
             showLastButton

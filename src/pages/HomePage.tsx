@@ -1,5 +1,5 @@
 import { Alert, AlertTitle, Box, Typography } from "@mui/material";
-import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 import { PopularMediaBanner } from "../components/PopularMediaBanner.tsx";
@@ -7,6 +7,9 @@ import { useDiscoverMedia } from "../features/tmdb/hooks/useDiscoverMedia.ts";
 import { usePopularMedia } from "../features/tmdb/hooks/usePopularMedia.ts";
 import type { TmdbMediaType } from "../features/tmdb/types/tmdb-media.type.ts";
 import { MediaList } from "../components/MediaList.tsx";
+import { MediaFilters } from "../components/MediaFilters.tsx";
+import { useMediaGenres } from "../features/tmdb/hooks/useMediaGenres.ts";
+import type { TmdbSortByType } from "../features/tmdb/types/tmdb-sort-by.type.ts";
 
 export function HomePage() {
   const [itemRandomSeed] = useState(() => Math.random());
@@ -14,13 +17,22 @@ export function HomePage() {
     Math.random() < 0.5 ? "movie" : "tv",
   );
   const [listPage, setListPage] = useState(1);
-  const [listMediaType] = useState<TmdbMediaType>("movie");
+  const [listMediaType, setListMediaType] = useState<TmdbMediaType>("movie");
+  const [listGenre, setListGenre] = useState<string>("");
+  const [listSortBy, setListSortBy] =
+    useState<TmdbSortByType>("popularity.desc");
 
   const previousListPage = useRef(listPage);
   const sectionRef = useRef<HTMLElement>(null);
 
   const popularMediaQuery = usePopularMedia(bannerMediaType);
-  const discoverMediaQuery = useDiscoverMedia(listMediaType, listPage);
+  const discoverMediaQuery = useDiscoverMedia(
+    listMediaType,
+    listPage,
+    listGenre,
+    listSortBy,
+  );
+  const genresQuery = useMediaGenres(listMediaType);
 
   useEffect(() => {
     if (previousListPage.current === listPage) {
@@ -43,11 +55,20 @@ export function HomePage() {
     discoverMediaQuery.data.results &&
     discoverMediaQuery.data.results.length > 0;
 
-  const handleListPageChange = function (
-    _event: ChangeEvent<unknown>,
-    page: number,
-  ) {
+  const handleListPageChange = function (page: number) {
     setListPage(page);
+  };
+
+  const handleMediaTypeChange = function (mediaType: TmdbMediaType) {
+    setListMediaType(mediaType);
+  };
+
+  const handleListGenreChange = function (genre: string) {
+    setListGenre(genre);
+  };
+
+  const handleListSortByChange = function (orderBy: TmdbSortByType) {
+    setListSortBy(orderBy);
   };
 
   return (
@@ -73,14 +94,16 @@ export function HomePage() {
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <Box>
-            <Typography component="h2" variant="h4" sx={{ mb: 1 }}>
-              Scopri {contentType}
-            </Typography>
-            <Typography color="text.secondary" variant="body1">
-              Esplora i titoli selezionati dal catalogo TMDB.
-            </Typography>
-          </Box>
+          <MediaFilters
+            mediaType={listMediaType}
+            genre={listGenre}
+            sortBy={listSortBy}
+            genres={genresQuery.data ?? []}
+            totalResults={discoverMediaQuery.data?.totalResults ?? 0}
+            handleMediaTypeChange={handleMediaTypeChange}
+            handleGenreChange={handleListGenreChange}
+            handleSortByChange={handleListSortByChange}
+          />
 
           {discoverMediaQuery.isLoading && <LoadingSpinner />}
           {discoverMediaQuery.isError && (
@@ -116,7 +139,6 @@ export function HomePage() {
               page={listPage}
               isFetching={discoverMediaQuery.isFetching}
               totalPages={discoverMediaQuery.data.totalPages}
-              totalResults={discoverMediaQuery.data.totalResults}
               handlePageChange={handleListPageChange}
             />
           )}
