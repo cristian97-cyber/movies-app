@@ -5,6 +5,23 @@ import type { TmdbMediaDetailByType } from "../types/tmdb-media-detail-by.type.t
 import type { TmdbMediaType } from "../types/tmdb-media.type.ts";
 import { mapTmdbPaginatedMedia } from "./tmdb-media.mapper.ts";
 import type { TmdbVideoModel } from "../models/tmdb-video.model.ts";
+import type {
+  TmdbWatchProviderModel,
+  TmdbWatchProvidersResponseModel,
+} from "../models/tmdb-watch-provider.model.ts";
+import type { WatchProviderModel } from "../../../features/media/models/watch-provider.model.ts";
+
+const getBrowserRegion = (): string => {
+  const locale = navigator.language;
+
+  try {
+    return new Intl.Locale(locale).region ?? "IT";
+  } catch {
+    return "IT";
+  }
+};
+
+const WATCH_PROVIDER_CATEGORIES = ["flatrate", "free", "ads"] as const;
 
 export function mapTmdbMediaDetail<TMediaType extends TmdbMediaType>(
   mediaType: TMediaType,
@@ -55,6 +72,7 @@ export function mapTmdbMediaDetail<TMediaType extends TmdbMediaType>(
   }
 
   const trailerKey = getTrailerKey(media.videos.results);
+  const watchProviders = getWatchProviders(media["watch/providers"]);
 
   return {
     id: media.id,
@@ -85,6 +103,7 @@ export function mapTmdbMediaDetail<TMediaType extends TmdbMediaType>(
     cast,
     recommendations,
     trailer: trailerKey ? `https://www.youtube.com/embed/${trailerKey}` : null,
+    watchProviders,
   };
 }
 
@@ -117,4 +136,36 @@ function getTrailerKey(videos: TmdbVideoModel[]): string | null {
         new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
     )[0]?.key ?? null
   );
+}
+
+function getWatchProviders(
+  providersResponse?: TmdbWatchProvidersResponseModel,
+): WatchProviderModel[] {
+  if (!providersResponse) {
+    return [];
+  }
+
+  const tmdbProvidersByCountry = providersResponse.results[getBrowserRegion()];
+  return tmdbProvidersByCountry
+    ? Array.from(
+        new Map(
+          WATCH_PROVIDER_CATEGORIES.flatMap(
+            (category) => tmdbProvidersByCountry[category] ?? [],
+          ).map((provider) => [provider.provider_id, provider]),
+        ).values(),
+      )
+        .map(mapTmdbWatchProvider)
+        .sort((a, b) => a.priority - b.priority)
+    : [];
+}
+
+function mapTmdbWatchProvider(
+  tmdbProvider: TmdbWatchProviderModel,
+): WatchProviderModel {
+  return {
+    id: tmdbProvider.provider_id,
+    name: tmdbProvider.provider_name,
+    logoPath: tmdbProvider.logo_path,
+    priority: tmdbProvider.display_priority,
+  };
 }

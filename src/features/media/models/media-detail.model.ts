@@ -3,6 +3,7 @@ import type { CastMemberModel } from "./cast-member.model.ts";
 import type { GenreModel } from "./genre.model.ts";
 import type { PaginatedMediaModel } from "./paginated-media.model.ts";
 import type { ProductionCompanyModel } from "./production-company.model.ts";
+import type { WatchProviderModel } from "./watch-provider.model.ts";
 
 export interface MediaDetailModel {
   id: number;
@@ -28,4 +29,5 @@ export interface MediaDetailModel {
   cast: CastMemberModel[];
   recommendations: PaginatedMediaModel;
   trailer: string | null;
+  watchProviders: WatchProviderModel[];
 }

@@ -88,8 +88,8 @@ export function getMediaDetail<TMediaType extends TmdbMediaType>(
   const searchParams = new URLSearchParams({
     append_to_response:
       mediaType === "movie"
-        ? "release_dates,credits,recommendations,videos"
-        : "content_ratings,aggregate_credits,recommendations,videos",
+        ? "release_dates,credits,recommendations,videos,watch/providers"
+        : "content_ratings,aggregate_credits,recommendations,videos,watch/providers",
     language: TMDB_LANGUAGE,
   });
 

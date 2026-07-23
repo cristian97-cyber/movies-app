@@ -262,6 +262,63 @@ export function MediaDetailHeader({ media }: MediaDetailHeaderProps) {
               Guarda il trailer
             </Button>
           </Box>
+
+          {media.watchProviders.length > 0 ? (
+            <Box sx={{ mt: 4 }}>
+              <Typography
+                component="h2"
+                sx={{
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  letterSpacing: 1.5,
+                  textTransform: "uppercase",
+                }}
+              >
+                Disponibile su
+              </Typography>
+              <Box
+                aria-label="Piattaforme disponibili"
+                component="ul"
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 1.5,
+                  justifyContent: { xs: "center", md: "flex-start" },
+                  listStyle: "none",
+                  m: 0,
+                  mt: 1.5,
+                  p: 0,
+                }}
+              >
+                {media.watchProviders.map((provider) => (
+                  <Box component="li" key={provider.id}>
+                    <Box
+                      alt={provider.name}
+                      component="img"
+                      src={`${TMDB_IMAGE_BASE_URL}/w92${provider.logoPath}`}
+                      title={provider.name}
+                      sx={{
+                        borderRadius: 1,
+                        display: "block",
+                        height: 44,
+                        width: 44,
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Box>
+              <Typography
+                component="p"
+                sx={{
+                  color: "rgba(255, 255, 255, 0.52)",
+                  fontSize: "0.7rem",
+                  mt: 1,
+                }}
+              >
+                Dati di disponibilità forniti da JustWatch
+              </Typography>
+            </Box>
+          ) : null}
         </Box>
       </Box>
       <MediaTrailer
