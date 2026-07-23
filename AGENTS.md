@@ -4,33 +4,34 @@
 
 This is **CineScope**, a React + Vite + TypeScript movie/TV application. Source code lives in `src/`.
 
-- `src/main.tsx`: app entry point; wraps React with the router, TanStack Query, and Material UI providers.
-- `src/App.tsx`: root application component; renders the persistent app layout and defines the home and media-detail routes.
-- `src/components/Header.tsx`: persistent CineScope header with the brand block on the left and a search field on the right. It should remain visible regardless of the active route.
-- `src/components/PopularMediaBanner.tsx`: home-page hero banner shared by popular movies and TV series; it consumes the normalized `MediaModel` used by the UI.
-- `src/components/MediaList.tsx`: paginated responsive catalog grid. It renders 1/2/3/4/5 columns across the `xs`/`sm`/`md`/`lg`/`xl` breakpoints so card actions remain readable on one line.
-- `src/components/MediaCard.tsx`: normalized media presentation. Poster and metadata link to the shared media-detail route, while the separate watchlist button is currently visual-only.
-- `src/pages/MediaDetailPage.tsx`: shared movie/TV detail page for the `media/:mediaType/:id` route. It owns loading and API-error states and renders detail components only when normalized data is available.
-- `src/components/MediaDetailHeader.tsx`: responsive detail hero with backdrop, poster, metadata, genres, rating, a clamped overview, a visual-only watchlist action, and a functional trailer action.
-- `src/components/MediaTrailer.tsx`: accessible responsive dialog that embeds the trailer URL from the detail model and removes the iframe when closed so playback stops.
-- `src/components/MovieDetailContent.tsx`: shared movie/TV detail content containing storyline, media facts, cast, and recommendations.
-- `src/components/CastMember.tsx` and `src/components/RecommendedMedia.tsx`: focused presentation components used by the detail content. Recommended-media cards intentionally show only the poster and link to the shared detail route.
-- `src/models/`: backend-independent UI/domain models consumed by pages and components, including normalized `MediaModel`, `PaginatedMediaModel`, and `MediaDetailModel`. The detail model includes cast, recommendations, and the selected trailer URL.
-- `src/features/tmdb/`: TMDB integration, split into the API client, TanStack Query hooks, response models, and shared media types.
-- `src/features/tmdb/mappers/tmdb-media.mapper.ts`: normalization boundary from TMDB movie/TV DTOs and snake_case pagination fields to the shared camelCase UI models.
-- `src/features/tmdb/mappers/tmdb-media-detail.mapper.ts`: normalizes movie/TV details, credits, recommendations, and videos. Trailer selection prefers official trailers, then unofficial trailers, official teasers, and unofficial teasers; the newest video in the selected group wins.
-- `src/features/tmdb/hooks/usePopularMedia.ts`: typed popular-content query. It accepts `"movie" | "tv"`, includes that value in the query key, and makes only the matching TMDB request.
-- `src/features/tmdb/hooks/useMediaDetail.ts`: shared typed detail query for movies and TV series; its public inputs are media type and numeric media ID.
-- `src/pages/HomePage.tsx`: selects a stable random media type and popular result for the hero banner.
-- `src/const/app-url.const.ts`: shared application route constants; use these instead of duplicating route strings.
-- `src/theme/theme.ts`: Material UI theme configuration.
+- `src/main.tsx`: app entry point; wraps React with TanStack Query, Material UI, `WatchListProvider`, and the router.
+- `src/App.tsx`: root application component; renders the persistent layout and defines the home and shared media-detail routes.
+- `src/apis/tmdb/`: complete TMDB integration, split into the API client, TanStack Query hooks, DTOs, mappers, and TMDB-specific types. Keep backend DTOs and snake_case fields inside this boundary.
+- `src/apis/tmdb/mappers/tmdb-media.mapper.ts`: normalization boundary from TMDB movie/TV DTOs and snake_case pagination fields to the shared camelCase media models.
+- `src/apis/tmdb/mappers/tmdb-media-detail.mapper.ts`: normalizes movie/TV details, credits, recommendations, and videos. Trailer selection prefers official trailers, then unofficial trailers, official teasers, and unofficial teasers; the newest video in the selected group wins.
+- `src/features/media/`: media catalog and detail feature, containing its components, pages, and backend-independent UI/domain models such as `MediaModel`, `PaginatedMediaModel`, and `MediaDetailModel`.
+- `src/features/media/components/MediaList.tsx`: paginated responsive catalog grid. It renders 1/2/3/4/5 columns across the `xs`/`sm`/`md`/`lg`/`xl` breakpoints so card actions remain readable on one line.
+- `src/features/media/components/MediaCard.tsx`: normalized media presentation. Poster and metadata link to the shared media-detail route; the watchlist action is a separate sibling control.
+- `src/features/media/pages/MediaDetailPage.tsx`: shared movie/TV detail page for the `media/:mediaType/:id` route. It owns loading and API-error states and renders detail components only when normalized data is available.
+- `src/features/media/components/MediaDetailHeader.tsx`: responsive detail hero with backdrop, poster, metadata, genres, rating, overview, shared watchlist action, and functional trailer action.
+- `src/features/watchlist/`: global watchlist feature. It contains the Drawer UI, item presentation, Context, Provider, hook, reducer, mapper, minimal persisted model, and localStorage adapter.
+- `src/features/watchlist/models/watch-list-item.model.ts`: minimal persisted watchlist shape. Store only `id`, `mediaType`, title, poster path, release year, and rating; identify entries by the combined `mediaType + id` key.
+- `src/features/watchlist/providers/WatchListProvider.tsx`: owns the reducer, restores the initial state from localStorage, persists changes, and exposes add/remove/toggle/contains/clear operations through Context.
+- `src/features/watchlist/storage/watch-list.storage.ts`: validates, deduplicates, loads, saves, and clears the versioned `cinescope:watchlist:v1` localStorage payload. Storage errors must not break the in-memory application state.
+- `src/features/watchlist/components/WatchList.tsx`: responsive right-side Drawer. It is full-screen on `xs`, 480 px from `sm`, keeps pagination local, and supports removing individual titles or clearing the list.
+- `src/features/watchlist/components/WatchListItem.tsx`: focused watchlist-row presentation. Its media content links to the shared detail route and closes the Drawer on navigation; the separate remove button must remain outside the link.
+- `src/shared/components/WatchListButton.tsx`: single reusable add/remove action for cards, banners, and detail views. Use this component instead of duplicating watchlist buttons or calling the Context directly from media presentation components.
+- `src/layout/Header.tsx`: persistent CineScope header with brand, search, and the control that opens the watchlist Drawer. It remains visible regardless of the active route.
+- `src/core/const/app-url.const.ts`: shared application route constants; use these instead of duplicating route strings.
+- `src/core/themes/theme.ts`: Material UI theme configuration.
+- `src/shared/`: application-wide reusable UI and utilities that do not belong to one feature.
 - `src/assets/`: bundled images and static assets imported by React.
 - `src/assets/brand/logo.png`: CineScope logo used by the application. It has a transparent background and is intended to be imported from React components.
 - `public/`: static files served directly by Vite.
 - `public/favicon.png`: browser favicon derived from the CineScope logo. `index.html` points to this file directly as `/favicon.png`.
 - `dist/`: production build output; do not edit manually or commit.
 
-As the app grows, prefer feature-oriented folders such as `src/features/catalog/`, `src/features/watchlist/`, and shared UI in `src/components/`.
+Continue using feature-oriented folders under `src/features/`, external integrations under `src/apis/`, app-wide layout under `src/layout/`, stable configuration under `src/core/`, and cross-feature reusable code under `src/shared/`.
 
 ## Build, Test, and Development Commands
 
@@ -52,7 +53,7 @@ Use TypeScript and React function components. Prefer explicit domain types for T
 
 Formatting uses Prettier, and linting uses ESLint. Keep imports tidy, avoid unused exports, and keep components focused on one responsibility.
 
-Keep movie and TV response models distinct inside the TMDB layer because the backend uses fields such as `title`/`release_date` for movies and `name`/`first_air_date` for TV series. Normalize those DTOs through the TMDB mappers and expose the backend-independent `MediaModel`, `PaginatedMediaModel`, and `MediaDetailModel` from `src/models/` to pages and components. UI components should not import TMDB movie/TV response models, read snake_case backend fields, or duplicate movie/TV mapping logic.
+Keep movie and TV response models distinct inside the TMDB layer because the backend uses fields such as `title`/`release_date` for movies and `name`/`first_air_date` for TV series. Normalize those DTOs through the TMDB mappers and expose the backend-independent `MediaModel`, `PaginatedMediaModel`, and `MediaDetailModel` from `src/features/media/models/` to pages and components. UI components should not import TMDB movie/TV response models, read snake_case backend fields, or duplicate movie/TV mapping logic.
 
 The detail request uses TMDB `append_to_response` to keep detail data in one HTTP request. Movies append `release_dates`, `credits`, `recommendations`, and `videos`; TV series append `content_ratings`, `aggregate_credits`, `recommendations`, and `videos`. Preserve the movie/TV differences when extending these DTOs or mappings.
 
@@ -60,11 +61,15 @@ Use TanStack Query for server state. Query keys must include every input that ch
 
 Do not nest buttons or other interactive controls inside links. For media cards, keep the detail `CardActionArea` and watchlist action as sibling controls. Preserve `APP_URL` route constants and accessible labels when adding card navigation. Keep the watchlist button label on one line until a shorter responsive label is intentionally designed.
 
+Treat the watchlist as global client state and access it through `useWatchList`. Keep Drawer open/closed state and pagination local to their owning UI components. Persist only the normalized `WatchListItemModel`, never full media-detail objects, and preserve the `mediaType + id` identity rule in reducers, storage, keys, and lookups.
+
+For Material UI `Typography`, use `color="textSecondary"` or `sx={{ color: "text.secondary" }}`. Do not use `color="text.secondary"`, because the `color` prop does not resolve dotted theme paths in the installed Material UI version.
+
 ## Branding & Assets
 
 The app name is **CineScope**. Keep user-facing titles, navigation labels, document metadata, and brand assets consistent with that name.
 
-The application UI language is Italian. Keep visible copy, fallback messages, accessible labels, image alternative text, number formatting, and document language in Italian. The product term **watchlist** must never be translated; use labels such as `Aggiungi alla watchlist`. TMDB requests default to `it-IT` when `VITE_TMDB_LANGUAGE` is not configured, and `formatLanguage`/`formatMediaStatus` in `src/utils/utils.ts` localize common detail values.
+The application UI language is Italian. Keep visible copy, fallback messages, accessible labels, image alternative text, number formatting, and document language in Italian. The product term **watchlist** must never be translated; use labels such as `Aggiungi alla watchlist`. TMDB requests default to `it-IT` when `VITE_TMDB_LANGUAGE` is not configured, and `formatLanguage`/`formatMediaStatus` in `src/shared/utils/utils.ts` localize common detail values.
 
 The Material UI theme currently uses a dark cinema-style palette:
 
