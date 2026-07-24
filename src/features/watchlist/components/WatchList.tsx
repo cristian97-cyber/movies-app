@@ -90,9 +90,16 @@ export function WatchList({ open, onClose }: WatchListProps) {
             backgroundImage:
               "linear-gradient(145deg, rgba(0, 184, 169, 0.05), transparent 34%)",
             boxShadow: "-18px 0 48px rgba(0, 0, 0, 0.48)",
+            boxSizing: "border-box",
             display: "flex",
+            height: "100vh",
+            maxHeight: "100vh",
             maxWidth: "100vw",
             width: { xs: "100vw", sm: 480 },
+            "@supports (height: 100dvh)": {
+              height: "100dvh",
+              maxHeight: "100dvh",
+            },
           },
         },
       }}
