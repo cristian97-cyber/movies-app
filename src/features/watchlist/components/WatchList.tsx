@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWatchList } from "../hooks/useWatchList.ts";
 import type { WatchListItemModel } from "../models/watch-list-item.model.ts";
 import { WatchListItem } from "./WatchListItem.tsx";
@@ -56,6 +56,32 @@ export function WatchList({ open, onClose }: WatchListProps) {
   const { clear, items: watchList, remove } = useWatchList();
 
   const [page, setPage] = useState(1);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    const visualViewport = window.visualViewport;
+    let animationFrame = 0;
+
+    function updateViewportHeight() {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(() => {
+        setViewportHeight(visualViewport?.height ?? window.innerHeight);
+      });
+    }
+
+    updateViewportHeight();
+    visualViewport?.addEventListener("resize", updateViewportHeight);
+    window.addEventListener("resize", updateViewportHeight);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      visualViewport?.removeEventListener("resize", updateViewportHeight);
+      window.removeEventListener("resize", updateViewportHeight);
+    };
+  }, []);
+
+  const drawerHeight =
+    viewportHeight === null ? null : `${Math.round(viewportHeight)}px`;
 
   const totalPages = Math.ceil(watchList.length / ITEMS_PER_PAGE);
   const pageItems = watchList.slice(
@@ -92,13 +118,13 @@ export function WatchList({ open, onClose }: WatchListProps) {
             boxShadow: "-18px 0 48px rgba(0, 0, 0, 0.48)",
             boxSizing: "border-box",
             display: "flex",
-            height: "100vh",
-            maxHeight: "100vh",
+            height: drawerHeight ?? "100vh",
+            maxHeight: drawerHeight ?? "100vh",
             maxWidth: "100vw",
             width: { xs: "100vw", sm: 480 },
             "@supports (height: 100dvh)": {
-              height: "100dvh",
-              maxHeight: "100dvh",
+              height: drawerHeight ?? "100dvh",
+              maxHeight: drawerHeight ?? "100dvh",
             },
           },
         },
